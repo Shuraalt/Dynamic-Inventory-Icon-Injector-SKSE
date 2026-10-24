@@ -61,6 +61,9 @@ FetchContent_Declare(
     GIT_SHALLOW TRUE
 )
 FetchContent_MakeAvailable(CommonLibSSE)
+# add_commonlibsse_plugin() is only exposed through find_package or prebuilt builds,
+# so include the helper explicitly when building the library from source.
+include("${commonlibsse_SOURCE_DIR}/cmake/CommonLibSSE.cmake")
 
 # Setup your SKSE plugin as an SKSE plugin!
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${sources}) # <--- specifies plugin.cpp
@@ -69,8 +72,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE ../PCH.h) # <--- PCH.h is requ
 
 find_package(minhook CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE minhook::minhook)
-find_package(boost REQUIRED COMPONENTS algorithm)
-target_link_directories(${PROJECT_NAME} PRIVATE boost::algorithm)
+find_package(boost_algorithm CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE Boost::algorithm)
 find_package(xbyak CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE xbyak::xbyak)
 find_package(jsoncpp CONFIG REQUIRED)
