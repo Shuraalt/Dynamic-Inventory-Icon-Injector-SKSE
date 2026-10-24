@@ -36,15 +36,33 @@ if(DEFINED ENV{SKYRIM_MODS_FOLDER} AND IS_DIRECTORY "$ENV{SKYRIM_MODS_FOLDER}")
     set(OUTPUT_FOLDER "$ENV{SKYRIM_MODS_FOLDER}/${PROJECT_NAME}")
 endif()
 
-# Otherwise, you can set OUTPUT_FOLDER to any place you'd like :)
-set(OUTPUT_FOLDER "D:/SteamLibrary/steamapps/common/Skyrim Special Edition/MO2/mods/Dynamic Inventory Icon Injector")
-#if(NOT EXISTS "${OUTPUT_FOLDER}") 
-#    set(OUTPUT_FOLDER "C:\\Users\\elain\\AppData\\Local\\ModOrganizer\\Skyrim Special Edition\\mods\\BetterSkyrim")
-#endif()
+# If neither environment variable is set, no copy step is added and the built
+# DLL stays in the build folder (build/release/ next to CMakePresets.json).
 
 #include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+
+# CommonLibSSE-NG is fetched from source instead of using the old vcpkg port.
+# The old port (CharmedBaryon/CommonLibSSE, last commit 2024-09) cannot read the
+# format-5 Address Library used by Skyrim 1.7.99+, so any plugin built against it
+# fails with "failed to open address library file" on 1.7.x.
+include(FetchContent)
+set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
+# PCH.h does `#undef ENABLE_SKYRIM_VR`, so build CommonLib without VR as well.
+# Otherwise it would publicly define ENABLE_SKYRIM_VR and the two sides would disagree.
+set(ENABLE_SKYRIM_VR OFF CACHE BOOL "" FORCE)
+# Same trampoline option the old port enabled.
+set(SKSE_SUPPORT_XBYAK ON CACHE BOOL "" FORCE)
+# Not needed, and it vendors a MinHook component that could clash with vcpkg's minhook.
+set(SKSE_SUPPORT_PATCH_SAFETY OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+    CommonLibSSE
+    GIT_REPOSITORY https://github.com/alandtse/CommonLibSSE-NG.git
+    GIT_TAG v13.1.0
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(CommonLibSSE)
+
 # Setup your SKSE plugin as an SKSE plugin!
-find_package(CommonLibSSE CONFIG REQUIRED)
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${sources}) # <--- specifies plugin.cpp
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_23) # <--- use C++23 standard
 target_precompile_headers(${PROJECT_NAME} PRIVATE ../PCH.h) # <--- PCH.h is required!

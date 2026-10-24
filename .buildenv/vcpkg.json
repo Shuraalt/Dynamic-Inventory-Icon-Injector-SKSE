@@ -1,11 +1,17 @@
 {
   "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
-    "commonlibsse-ng",
-    "minhook",
+    "directxmath",
+    "directxtk",
+    "fmt",
+    "nlohmann-json",
+    "rapidcsv",
+    "simpleini",
     "spdlog",
-    "boost-algorithm",
+    "toml11",
     "xbyak",
+    "minhook",
+    "boost-algorithm",
     "jsoncpp"
   ]
 }

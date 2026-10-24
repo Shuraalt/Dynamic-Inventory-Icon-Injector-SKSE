@@ -1,0 +1,35 @@
+name: Build DLL
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      # The runner image ships with vcpkg at this location.
+      VCPKG_ROOT: C:\vcpkg
+    steps:
+      - uses: actions/checkout@v4
+
+      # Puts cl.exe, the Windows SDK, CMake and Ninja on PATH.
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Configure
+        working-directory: .buildenv
+        run: cmake --preset release
+
+      - name: Build
+        working-directory: .buildenv
+        run: cmake --build build/release
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: DynamicInventoryIconInjector
+          path: .buildenv/build/release/DynamicInventoryIconInjector.dll
+          if-no-files-found: error
