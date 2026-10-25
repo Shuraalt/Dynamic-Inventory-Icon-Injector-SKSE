@@ -31,7 +31,7 @@ jobs:
 
       - name: Build
         working-directory: C:\w\.buildenv
-        run: cmake --build build/release
+        run: cmake --build build/release -- -k 0
 
       - name: Upload DLL
         uses: actions/upload-artifact@v4

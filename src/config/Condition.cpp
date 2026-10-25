@@ -1,5 +1,9 @@
 #include "Condition.h"
 
+#ifdef GetObject
+#	undef GetObject  // wingdi.h rename, see PCH.h
+#endif
+
 namespace Config {
 	inline static std::vector<RE::BIPED_MODEL::BipedObjectSlot> PartMaskPrecedence = {
 		RE::BIPED_MODEL::BipedObjectSlot::kBody,
@@ -100,7 +104,7 @@ namespace Config {
 		if (!armor)
 			return false;
 
-		auto partMask = static_cast<std::uint32_t>(armor->GetSlotMask());
+		auto partMask = armor->GetSlotMask().underlying();
 
 		if ((partMask & _slot) == 0)
 			return false;

@@ -14,6 +14,13 @@
 #include <unordered_map>
 #include <unordered_set>
 
+// With UNICODE defined, wingdi.h renames GetObject to GetObjectW. CommonLibSSE-NG's
+// headers pull in Windows definitions, which breaks RE::InventoryEntryData::GetObject()
+// and RE::BGSDefaultObjectManager::GetObject<T>(). Undo the rename for the whole project.
+#ifdef GetObject
+#	undef GetObject
+#endif
+
 using namespace std::literals;
 namespace logger = SKSE::log;
 

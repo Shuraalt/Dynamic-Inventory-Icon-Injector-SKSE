@@ -9,6 +9,10 @@
 #include "defines/SoulGemDefs.h"
 #include "defines/WeaponDefs.h"
 
+#ifdef GetObject
+#	undef GetObject  // wingdi.h rename, see PCH.h
+#endif
+
 namespace Config {
 	// ========================================================================
 	// Item-level getter functions
